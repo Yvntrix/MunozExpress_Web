@@ -2,18 +2,14 @@ import {
   ActionIcon,
   Container,
   Divider,
-  Group,
-  Modal,
-  Paper,
+  Group, Paper,
   ScrollArea,
   Space,
-  Table,
-  Text,
-  Title,
+  Table, Title
 } from "@mantine/core";
 import { onChildChanged, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Plus, UserPlus } from "tabler-icons-react";
+import { Plus } from "tabler-icons-react";
 import AddRider from "../components/AddRider";
 import LoaderComponent from "../components/LoaderComponent";
 import NoRow from "../components/NoRow";

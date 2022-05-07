@@ -12,7 +12,7 @@ import {
 import { useForm } from "@mantine/form";
 import { showNotification } from "@mantine/notifications";
 import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
-import { ref, set } from "firebase/database";
+import { onValue, ref, set } from "firebase/database";
 import { useState } from "react";
 import { CircleCheck, Lock, Mail, User, UserPlus } from "tabler-icons-react";
 import StartFirebase, { auth } from "../firebase";
@@ -62,7 +62,7 @@ function RiderData() {
         Number(values.phone).toString().length == 10
           ? null
           : "Phone Number is not Valid",
-      pass: values.pass.length < 6 ? null : "Password is too short",
+      // pass: values.pass.length < 6 ? null : "Password is too short",
       cpass: values.pass == values.cpass ? null : "Passwords do not match",
     }),
   });
@@ -73,67 +73,82 @@ function RiderData() {
     phone: any;
     password: string;
   };
+
   function writeRiderData({ fname, lname, email, phone, password }: riderData) {
-    // authenticate rider data
     const db = StartFirebase();
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // write rider id in database
-        set(ref(db, "riders-id/" + userCredential.user.uid), {
-          Uid: userCredential.user.uid,
-          Email: email,
-          Phone: "+63" + phone,
-          Password: password,
-        }).then(
-          (onFullFilled) => {
-            // write rider data in database
-            set(ref(db, "riders/" + "+63" + phone), {
-              FirstName: fname,
-              LastName: lname,
-              Email: email,
-              Phone: "+63" + phone,
-              Password: password,
-            }).then(
-              (onFullFilled) => {
-                signOut(auth)
-                  .then(() => {
-                    // Sign-out successful.
-                    form.reset();
-                    setLoading(false);
-                    showNotification({
-                      color: "green",
-                      title: "Success",
-                      message: "Successfully added new rider",
-                      icon: <CircleCheck />,
-                    });
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-              },
-              (onRejected) => {
-                console.log(onRejected);
-              }
-            );
-          },
-          (onRejected) => {
-            console.log(onRejected);
+    return onValue(
+      ref(db, "users-id/"),
+      (snapshot) => {
+        const users = snapshot.val();
+        for (let user in users) {
+          if (user == "+63" + phone) {
+            form.setFieldError("phone", "Phone is already registered as user");
+            setLoading(false);
+          } else {
+            // authenticate rider data
+            createUserWithEmailAndPassword(auth, email, password)
+              .then((userCredential) => {
+                // write rider id in database
+                set(ref(db, "riders-id/" + userCredential.user.uid), {
+                  Uid: userCredential.user.uid,
+                  Email: email,
+                  Phone: "+63" + phone,
+                  Password: password,
+                }).then(
+                  (onFullFilled) => {
+                    // write rider data in database
+                    set(ref(db, "riders/" + "+63" + phone), {
+                      FirstName: fname,
+                      LastName: lname,
+                      Email: email,
+                      Phone: "+63" + phone,
+                      Password: password,
+                    }).then(
+                      (onFullFilled) => {
+                        signOut(auth)
+                          .then(() => {
+                            // Sign-out successful.
+                            form.reset();
+                            setLoading(false);
+                            showNotification({
+                              color: "green",
+                              title: "Success",
+                              message: "Successfully added new rider",
+                              icon: <CircleCheck />,
+                            });
+                          })
+                          .catch((error) => {
+                            console.log(error);
+                          });
+                      },
+                      (onRejected) => {
+                        console.log(onRejected);
+                      }
+                    );
+                  },
+                  (onRejected) => {
+                    console.log(onRejected);
+                  }
+                );
+              })
+              .catch((error) => {
+                //if email is already registered
+                setLoading(false);
+                form.setFieldError("email", "Email is already registered");
+                showNotification({
+                  color: "red",
+                  title: "Error",
+                  message: "Email is already registered",
+                  icon: <CircleCheck />,
+                });
+              });
           }
-        );
-      })
-      .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        //if email is already registered
-        setLoading(false);
-        form.setFieldError("email", "Email is already registered");
-        showNotification({
-          color: "red",
-          title: "Error",
-          message: "Email is already registered",
-          icon: <CircleCheck />,
-        });
-      });
+        }
+      },
+      {
+        onlyOnce: true,
+      }
+    );
   }
   const [loading, setLoading] = useState(false);
   return (

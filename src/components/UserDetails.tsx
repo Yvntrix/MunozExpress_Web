@@ -11,7 +11,6 @@ export default function UserDetails(id: any) {
 
   useEffect(() => {
     const detailRef = ref(db, "users/" + id.id);
-
     onChildChanged(detailRef, (data) => {
       completed = [];
       setCompleteds(completed);

@@ -35,18 +35,22 @@ function Customer() {
         ref(db, "users/"),
         (snapshot) => {
           const users = snapshot.val();
-          for (let user in users) {
+
+          Object.keys(users).forEach((e) => {
             finalProjects.push({
-              firstName: users[user].FirstName,
-              lastName: users[user].LastName,
-              phone: users[user].Phone,
-              email: users[user].Email,
+              id: e,
+              firstName: users[e].FirstName,
+              lastName: users[e].LastName,
+              phone: users[e].Phone,
+              email: users[e].Email,
             });
             row++;
-          }
+          });
+
           if (row == 0) {
             setNoRow(true);
           }
+
           setProject(finalProjects);
           setTimeout(() => setLoader(true), 400);
         },
@@ -59,16 +63,20 @@ function Customer() {
       ref(db, "users/"),
       (snapshot) => {
         const users = snapshot.val();
-        Object.keys(users).forEach((e) => {
-          finalProjects.push({
-            id: e,
-            firstName: users[e].FirstName,
-            lastName: users[e].LastName,
-            phone: users[e].Phone,
-            email: users[e].Email,
+        if (users == null) {
+          setNoRow(true);
+        } else {
+          Object.keys(users).forEach((e) => {
+            finalProjects.push({
+              id: e,
+              firstName: users[e].FirstName,
+              lastName: users[e].LastName,
+              phone: users[e].Phone,
+              email: users[e].Email,
+            });
+            row++;
           });
-          row++;
-        });
+        }
 
         if (row == 0) {
           setNoRow(true);
