@@ -33,19 +33,20 @@ function Pahatid() {
           {<PahatidPlaced />}
         </Tabs.Tab>
         <Tabs.Tab
-          label="Completed Orders"
-          tabKey="Completed"
-          icon={<Check size={14} />}
-        >
-          {<PahatidCompleted />}
-        </Tabs.Tab>
-        <Tabs.Tab
           label="Ongoing Orders"
           tabKey="Ongoing"
           icon={<Loader size={14} />}
         >
           {<PahatidOngoing />}
         </Tabs.Tab>
+        <Tabs.Tab
+          label="Completed Orders"
+          tabKey="Completed"
+          icon={<Check size={14} />}
+        >
+          {<PahatidCompleted />}
+        </Tabs.Tab>
+  
         <Tabs.Tab
           label="Cancelled Orders"
           tabKey="Cancelled"

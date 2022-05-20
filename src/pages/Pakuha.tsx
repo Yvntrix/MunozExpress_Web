@@ -33,19 +33,20 @@ function Pakuha() {
           {<PakuhaPlaced />}
         </Tabs.Tab>
         <Tabs.Tab
-          label="Completed Orders"
-          tabKey="Completed"
-          icon={<Check size={14} />}
-        >
-          {<PakuhaCompleted />}
-        </Tabs.Tab>
-        <Tabs.Tab
           label="Ongoing Orders"
           tabKey="Ongoing"
           icon={<Loader size={14} />}
         >
           {<PakuhaOngoing />}
         </Tabs.Tab>
+        <Tabs.Tab
+          label="Completed Orders"
+          tabKey="Completed"
+          icon={<Check size={14} />}
+        >
+          {<PakuhaCompleted />}
+        </Tabs.Tab>
+        
         <Tabs.Tab
           label="Cancelled Orders"
           tabKey="Cancelled"

@@ -158,8 +158,7 @@ export default function PasundoDetails(id: any) {
             {d.Completed === 0 &&
             d.Ongoing === 0 &&
             d.Cancelled === 0 &&
-            d.Ongoing === 0 &&
-            d.Confirmed === 0 ? (
+            d.Ongoing === 0  ? (
               <ApproveButton id={d.TransactionId} transaction={d.ServiceType} />
             ) : (
               ""

@@ -38,7 +38,6 @@ export default function PasundoPlaced() {
           const transactions = snapshot.val();
           for (let i in transactions) {
             if (
-              transactions[i].Confirmed == 0 &&
               transactions[i].Cancelled == 0 &&
               transactions[i].Completed == 0 &&
               transactions[i].Ongoing == 0
@@ -71,7 +70,6 @@ export default function PasundoPlaced() {
         const transactions = snapshot.val();
         for (let i in transactions) {
           if (
-            transactions[i].Confirmed == 0 &&
             transactions[i].Cancelled == 0 &&
             transactions[i].Completed == 0 &&
             transactions[i].Ongoing == 0

@@ -73,6 +73,7 @@ function RiderData() {
     phone: any;
     password: string;
   };
+  const [pexist, setPexist] = useState(false);
 
   function writeRiderData({ fname, lname, email, phone, password }: riderData) {
     const db = StartFirebase();
@@ -82,57 +83,61 @@ function RiderData() {
         const users = snapshot.val();
         for (let user in users) {
           if (user == "+63" + phone) {
-            form.setFieldError("phone", "Phone is already registered as user");
-            setLoading(false);
-          } else {
-            // authenticate rider data
-            createUserWithEmailAndPassword(auth, email, password)
-              .then((userCredential) => {
-                // write rider id in database
-                set(ref(db, "riders-id/" + userCredential.user.uid), {
-                  Uid: userCredential.user.uid,
-                  Email: email,
-                  Phone: "+63" + phone,
-                  Password: password,
-                }).then(
-                  (onFullFilled) => {
-                    // write rider data in database
-                    set(ref(db, "riders/" + "+63" + phone), {
-                      FirstName: fname,
-                      LastName: lname,
-                      Email: email,
-                      Phone: "+63" + phone,
-                      Password: password,
-                    }).then(
-                      (onFullFilled) => {
-                        signOut(auth)
-                          .then(() => {
-                            // Sign-out successful.
-                            form.reset();
-                            setLoading(false);
-                            showNotification({
-                              color: "green",
-                              title: "Success",
-                              message: "Successfully added new rider",
-                              icon: <CircleCheck />,
-                            });
-                          })
-                          .catch((error) => {
-                            console.log(error);
+            setPexist(true);
+          }
+          // authenticate rider data
+        }
+        if (pexist == false) {
+          createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+              // write rider id in database
+              set(ref(db, "riders-id/" + userCredential.user.uid), {
+                Uid: userCredential.user.uid,
+                Email: email,
+                Phone: "+63" + phone,
+                Password: password,
+                Online: 0,
+              }).then(
+                (onFullFilled) => {
+                  // write rider data in database
+                  set(ref(db, "riders/" + "+63" + phone), {
+                    FirstName: fname,
+                    LastName: lname,
+                    Email: email,
+                    Phone: "+63" + phone,
+                    Password: password,
+                  }).then(
+                    (onFullFilled) => {
+                      signOut(auth)
+                        .then(() => {
+                          // Sign-out successful.
+                          form.reset();
+                          setLoading(false);
+                          showNotification({
+                            color: "green",
+                            title: "Success",
+                            message: "Successfully added new rider",
+                            icon: <CircleCheck />,
                           });
-                      },
-                      (onRejected) => {
-                        console.log(onRejected);
-                      }
-                    );
-                  },
-                  (onRejected) => {
-                    console.log(onRejected);
-                  }
-                );
-              })
-              .catch((error) => {
-                //if email is already registered
+                        })
+                        .catch((error) => {
+                          console.log(error);
+                        });
+                    },
+                    (onRejected) => {
+                      console.log(onRejected);
+                    }
+                  );
+                },
+                (onRejected) => {
+                  console.log(onRejected);
+                }
+              );
+            })
+            .catch((error) => {
+              //if email is already registered
+              const errorCode = error.code;
+              if (errorCode == "auth/email-already-in-use") {
                 setLoading(false);
                 form.setFieldError("email", "Email is already registered");
                 showNotification({
@@ -141,8 +146,8 @@ function RiderData() {
                   message: "Email is already registered",
                   icon: <CircleCheck />,
                 });
-              });
-          }
+              }
+            });
         }
       },
       {

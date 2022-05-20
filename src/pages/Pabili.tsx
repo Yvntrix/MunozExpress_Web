@@ -32,19 +32,20 @@ function Pabili() {
         >
           {<PabiliPlaced />}
         </Tabs.Tab>
-        <Tabs.Tab
-          label="Completed Orders"
-          tabKey="Completed"
-          icon={<Check size={14} />}
-        >
-          {<PabiliCompleted />}
-        </Tabs.Tab>
+
         <Tabs.Tab
           label="Ongoing Orders"
           tabKey="Ongoing"
           icon={<Loader size={14} />}
         >
           {<PabiliOngoing />}
+        </Tabs.Tab>
+        <Tabs.Tab
+          label="Completed Orders"
+          tabKey="Completed"
+          icon={<Check size={14} />}
+        >
+          {<PabiliCompleted />}
         </Tabs.Tab>
         <Tabs.Tab
           label="Cancelled Orders"

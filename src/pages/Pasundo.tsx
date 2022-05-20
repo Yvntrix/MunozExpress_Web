@@ -32,19 +32,20 @@ function Pasundo() {
         >
           {<PasundoPlaced />}
         </Tabs.Tab>
-        <Tabs.Tab
-          label="Completed Orders"
-          tabKey="Completed"
-          icon={<Check size={14} />}
-        >
-          {<PasundoCompleted />}
-        </Tabs.Tab>
+        
         <Tabs.Tab
           label="Ongoing Orders"
           tabKey="Ongoing"
           icon={<Loader size={14} />}
         >
           {<PasundoOngoing />}
+        </Tabs.Tab>
+        <Tabs.Tab
+          label="Completed Orders"
+          tabKey="Completed"
+          icon={<Check size={14} />}
+        >
+          {<PasundoCompleted />}
         </Tabs.Tab>
         <Tabs.Tab
           label="Cancelled Orders"

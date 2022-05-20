@@ -1,6 +1,7 @@
 import { Button, Container, Select, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
-import { onValue, ref, update } from "firebase/database";
+import { onChildChanged, onValue, ref, update } from "firebase/database";
+import moment from "moment";
 import { useEffect, useState } from "react";
 import { CircleCheck, CircleX, User } from "tabler-icons-react";
 import StartFirebase from "../firebase";
@@ -17,6 +18,39 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
   let riderId: string;
   useEffect(() => {
     const userRef = ref(db, "riders/");
+    const riders = ref(db, "riders-id/");
+    onChildChanged(riders, (data) => {
+      riderList = [];
+      setDis(false);
+      onValue(userRef, (snapshot) => {
+        const rider = snapshot.val();
+        for (let i in rider) {
+          onValue(
+            ref(db, "riders-id/"),
+            (snapshot) => {
+              const ridersid = snapshot.val();
+              Object.keys(ridersid).forEach((e) => {
+                if (rider[i].Phone == ridersid[e].Phone) {
+                  if (ridersid[e].Online == 1) {
+                    riderList.push({
+                      value: e,
+                      label: rider[i].FirstName + " " + rider[i].LastName,
+                    });
+                    riderId = e;
+                  }
+                }
+              });
+            },
+            {
+              onlyOnce: true,
+            }
+          );
+        }
+        if (riderList === undefined || riderList.length === 0) {
+          setDis(true);
+        }
+      });
+    });
     onValue(userRef, (snapshot) => {
       const rider = snapshot.val();
       for (let i in rider) {
@@ -26,11 +60,13 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
             const ridersid = snapshot.val();
             Object.keys(ridersid).forEach((e) => {
               if (rider[i].Phone == ridersid[e].Phone) {
-                riderList.push({
-                  value: e,
-                  label: rider[i].FirstName + " " + rider[i].LastName,
-                });
-                riderId = e;
+                if (ridersid[e].Online == 1) {
+                  riderList.push({
+                    value: e,
+                    label: rider[i].FirstName + " " + rider[i].LastName,
+                  });
+                  riderId = e;
+                }
               }
             });
           },
@@ -38,6 +74,9 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
             onlyOnce: true,
           }
         );
+      }
+      if (riderList === undefined || riderList.length === 0) {
+        setDis(true);
       }
     });
   }, []);
@@ -59,16 +98,19 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
         return update(ref(db, "Transactions/" + transaction + "/" + id), {
           Ongoing: 1,
           AssignedTo: s,
+          TimeConfirmed: moment().format("YYYY-MM-DD HH:mm:ss"),
         });
       }, 700);
     }
   };
+  const [dis, setDis] = useState(false);
   const [loading, setLoading] = useState(false);
   return (
     <>
       <Container fluid>
         <Stack>
           <Select
+            disabled={dis}
             required
             label="Pick a Rider"
             placeholder="Pick a Rider"
@@ -77,11 +119,14 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
             icon={<User size={14} />}
           />
           <Button
-            leftIcon={<CircleCheck size={14} />}
+            disabled={dis}
+            leftIcon={
+              dis == true ? <CircleX size={14} /> : <CircleCheck size={14} />
+            }
             onClick={setD}
             loading={loading}
           >
-            Confirm
+            {dis == true ? "No Available Rider" : "Confirm"}
           </Button>
         </Stack>
       </Container>

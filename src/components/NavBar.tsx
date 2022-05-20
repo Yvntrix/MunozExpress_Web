@@ -67,7 +67,6 @@ export function NavbarNested({ fn, yes }: func) {
     openA = true;
   }
   const mockdata = [
-    { label: "Records", icon: Files, lin: "/records" },
     {
       label: "Transactions",
       icon: Archive,
@@ -80,6 +79,7 @@ export function NavbarNested({ fn, yes }: func) {
         { label: "Pasundo", link: "/pasundo" },
       ],
     },
+    { label: "Records", icon: Files, lin: "/records" },
     {
       label: "Accounts",
       icon: User,
@@ -90,7 +90,6 @@ export function NavbarNested({ fn, yes }: func) {
         { label: "Rider Accounts", link: "/rider" },
       ],
     },
-    
   ];
 
   function cl() {

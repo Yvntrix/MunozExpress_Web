@@ -17,6 +17,7 @@ import Pabili from "../pages/Pabili";
 import Pahatid from "../pages/Pahatid";
 import Pakuha from "../pages/Pakuha";
 import Pasundo from "../pages/Pasundo";
+import Records from "../pages/Records";
 import Rider from "../pages/Rider";
 import DarkMode from "./DarkMode";
 import { NavbarNested } from "./NavBar";
@@ -97,6 +98,7 @@ export default function ShellApp({ fn }: func) {
         <Route path="pakuha" element={<Pakuha />}></Route>
         <Route path="pasundo" element={<Pasundo />}></Route>
         <Route path="customer" element={<Customer />}></Route>
+        <Route path="records" element={<Records />}></Route>
         <Route path="rider" element={<Rider />}></Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
