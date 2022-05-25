@@ -23,6 +23,7 @@ export default function PabiliCompleted() {
         ref(db, "Transactions/Pabili"),
         (snapshot) => {
           const transactions = snapshot.val();
+
           for (let i in transactions) {
             if (transactions[i].Completed === 1) {
               if (transactions[i].TransactionId !== undefined) {

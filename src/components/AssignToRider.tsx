@@ -1,7 +1,7 @@
 import { Button, Container, Select, Stack } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import dayjs from "dayjs";
 import { onChildChanged, onValue, ref, update } from "firebase/database";
-import moment from "moment";
 import { useEffect, useState } from "react";
 import { CircleCheck, CircleX, User } from "tabler-icons-react";
 import StartFirebase from "../firebase";
@@ -15,7 +15,6 @@ type Fn = {
 export default function AssignToRider({ fn, id, transaction }: Fn) {
   const db = StartFirebase();
   let riderList: any[] = [];
-  let riderId: string;
   useEffect(() => {
     const userRef = ref(db, "riders/");
     const riders = ref(db, "riders-id/");
@@ -36,7 +35,6 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
                       value: e,
                       label: rider[i].FirstName + " " + rider[i].LastName,
                     });
-                    riderId = e;
                   }
                 }
               });
@@ -65,7 +63,6 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
                     value: e,
                     label: rider[i].FirstName + " " + rider[i].LastName,
                   });
-                  riderId = e;
                 }
               }
             });
@@ -98,7 +95,7 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
         return update(ref(db, "Transactions/" + transaction + "/" + id), {
           Ongoing: 1,
           AssignedTo: s,
-          TimeConfirmed: moment().format("YYYY-MM-DD HH:mm:ss"),
+          TimeConfirmed: dayjs().format("YYYY-MM-DD HH:mm:ss"),
         });
       }, 700);
     }
@@ -114,7 +111,10 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
             required
             label="Pick a Rider"
             placeholder="Pick a Rider"
-            onChange={(event) => (s = event)}
+            onChange={(event) => {
+              s = event;
+              console.log(event);
+            }}
             data={riderList}
             icon={<User size={14} />}
           />

@@ -1,6 +1,12 @@
-import { Container, Divider, Tabs, Title } from "@mantine/core";
+import { Container, Divider, Group, Tabs, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import { Check, CircleX, ClipboardText, Loader } from "tabler-icons-react";
+import {
+  Check,
+  CircleX,
+  ClipboardText,
+  Loader,
+  TruckDelivery,
+} from "tabler-icons-react";
 import PahatidCancelled from "./PahatidComponent/PahatidCancelled";
 import PahatidCompleted from "./PahatidComponent/PahatidCompleted";
 import PahatidOngoing from "./PahatidComponent/PahatidOngoing";
@@ -16,7 +22,9 @@ function Pahatid() {
   };
   return (
     <Container fluid>
-      <Title order={2}>Pahatid Transactions</Title>
+      <Group>
+        <TruckDelivery /> <Title order={2}>Pahatid Transactions</Title>
+      </Group>
       <Divider my="sm" variant="dashed" />
       <Tabs
         active={activeTab}
@@ -46,7 +54,7 @@ function Pahatid() {
         >
           {<PahatidCompleted />}
         </Tabs.Tab>
-  
+
         <Tabs.Tab
           label="Cancelled Orders"
           tabKey="Cancelled"

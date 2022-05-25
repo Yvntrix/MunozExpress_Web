@@ -68,6 +68,16 @@ export function NavbarNested({ fn, yes }: func) {
   }
   const mockdata = [
     {
+      label: "Records",
+      icon: Files,
+      lin: "",
+      initiallyOpened: openA,
+      links: [
+        { label: "Completed Transactions", link: "/records" },
+        { label: "Rider Salary", link: "/sales" },
+      ],
+    },
+    {
       label: "Transactions",
       icon: Archive,
       lin: "",
@@ -79,7 +89,7 @@ export function NavbarNested({ fn, yes }: func) {
         { label: "Pasundo", link: "/pasundo" },
       ],
     },
-    { label: "Records", icon: Files, lin: "/records" },
+
     {
       label: "Accounts",
       icon: User,

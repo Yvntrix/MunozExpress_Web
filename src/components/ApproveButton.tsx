@@ -16,9 +16,10 @@ import AssignToRider from "./AssignToRider";
 type Fn = {
   id: any;
   transaction: string;
+  ongoing: boolean;
 };
 
-export default function ApproveButton({ id, transaction }: Fn) {
+export default function ApproveButton({ id, transaction, ongoing }: Fn) {
   const modals = useModals();
   const openDeleteModal = () =>
     modals.openConfirmModal({
@@ -43,6 +44,7 @@ export default function ApproveButton({ id, transaction }: Fn) {
     const db = StartFirebase();
     return update(ref(db, "Transactions/" + transaction + "/" + id), {
       Cancelled: 1,
+      Ongoing: 0,
     });
   }
 
@@ -92,6 +94,7 @@ export default function ApproveButton({ id, transaction }: Fn) {
           Cancel Order
         </Button>
         <Button
+          disabled={ongoing}
           leftIcon={<CircleCheck size={14} />}
           onClick={() => setOpened(true)}
         >

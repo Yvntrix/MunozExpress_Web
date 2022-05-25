@@ -1,6 +1,12 @@
-import { Container, Divider, Tabs, Title } from "@mantine/core";
+import { Container, Divider, Group, Tabs, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import { Check, CircleX, ClipboardText, Loader } from "tabler-icons-react";
+import {
+  BuildingStore,
+  Check,
+  CircleX,
+  ClipboardText,
+  Loader,
+} from "tabler-icons-react";
 import PabiliCancelled from "./PabiliComponent/PabiliCancelled";
 import PabiliCompleted from "./PabiliComponent/PabiliCompleted";
 import PabiliOngoing from "./PabiliComponent/PabiliOngoing";
@@ -16,7 +22,10 @@ function Pabili() {
   };
   return (
     <Container fluid>
-      <Title order={2}>Pabili Transactions</Title>
+      <Group>
+        <BuildingStore /> <Title order={2}>Pabili Transactions</Title>
+      </Group>
+
       <Divider my="sm" variant="dashed" />
       <Tabs
         active={activeTab}

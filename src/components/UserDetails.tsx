@@ -18,7 +18,7 @@ export default function UserDetails(id: any) {
         ref(db, "users/" + id.id),
         (snapshot) => {
           const detail = snapshot.val();
-
+          
           completed.push({
             id: id.id,
             firstName: detail.FirstName,

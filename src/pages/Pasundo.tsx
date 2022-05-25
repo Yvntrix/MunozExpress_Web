@@ -1,6 +1,12 @@
-import { Title, Container, Tabs, Divider } from "@mantine/core";
+import { Title, Container, Tabs, Divider, Group } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import { Check, Loader, CircleX, ClipboardText } from "tabler-icons-react";
+import {
+  Check,
+  Loader,
+  CircleX,
+  ClipboardText,
+  Motorbike,
+} from "tabler-icons-react";
 import PasundoCancelled from "./PasundoComponent/PasundoCancelled";
 import PasundoCompleted from "./PasundoComponent/PasundoCompleted";
 import PasundoOngoing from "./PasundoComponent/PasundoOngoing";
@@ -16,7 +22,9 @@ function Pasundo() {
   };
   return (
     <Container fluid>
-      <Title order={2}>Pasundo Transactions</Title>
+      <Group>
+        <Motorbike /> <Title order={2}>Pasundo Transactions</Title>
+      </Group>
       <Divider my="sm" variant="dashed" />
       <Tabs
         active={activeTab}
@@ -32,7 +40,7 @@ function Pasundo() {
         >
           {<PasundoPlaced />}
         </Tabs.Tab>
-        
+
         <Tabs.Tab
           label="Ongoing Orders"
           tabKey="Ongoing"

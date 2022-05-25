@@ -1,6 +1,13 @@
-import { Container, Divider, Tabs, Title } from "@mantine/core";
+import { Container, Divider, Group, Tabs, Title } from "@mantine/core";
 import { useLocalStorage } from "@mantine/hooks";
-import { Check, CircleX, ClipboardText, Loader } from "tabler-icons-react";
+import {
+  Check,
+  CircleX,
+  ClipboardText,
+  Loader,
+  Package,
+  PackgeImport,
+} from "tabler-icons-react";
 import PakuhaCancelled from "./PakuhaComponent/PakuhaCancelled";
 import PakuhaCompleted from "./PakuhaComponent/PakuhaCompleted";
 import PakuhaOngoing from "./PakuhaComponent/PakuhaOngoing";
@@ -16,7 +23,9 @@ function Pakuha() {
   };
   return (
     <Container fluid>
-      <Title order={2}>Pakuha Transactions</Title>
+      <Group>
+        <PackgeImport /> <Title order={2}>Pakuha Transactions</Title>
+      </Group>
       <Divider my="sm" variant="dashed" />
       <Tabs
         active={activeTab}
@@ -46,7 +55,7 @@ function Pakuha() {
         >
           {<PakuhaCompleted />}
         </Tabs.Tab>
-        
+
         <Tabs.Tab
           label="Cancelled Orders"
           tabKey="Cancelled"

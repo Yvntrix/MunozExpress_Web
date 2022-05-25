@@ -211,11 +211,12 @@ export default function PahatidDetails(id: any) {
                 </Paper>
               </Grid.Col>
             </Grid>
-            {d.Completed === 0 &&
-            d.Ongoing === 0 &&
-            d.Cancelled === 0 &&
-            d.Ongoing === 0  ? (
-              <ApproveButton id={d.TransactionId} transaction={d.ServiceType} />
+            {d.Completed === 0 && d.Cancelled === 0 ? (
+              <ApproveButton
+                id={d.TransactionId}
+                transaction={d.ServiceType}
+                ongoing={d.Ongoing == 1 ? true : false }
+              />
             ) : (
               ""
             )}

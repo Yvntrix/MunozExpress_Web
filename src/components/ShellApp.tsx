@@ -19,6 +19,7 @@ import Pakuha from "../pages/Pakuha";
 import Pasundo from "../pages/Pasundo";
 import Records from "../pages/Records";
 import Rider from "../pages/Rider";
+import Sales from "../pages/Sales";
 import DarkMode from "./DarkMode";
 import { NavbarNested } from "./NavBar";
 type func = {
@@ -92,8 +93,9 @@ export default function ShellApp({ fn }: func) {
       }
     >
       <Routes>
-        <Route path="/" element={<Pabili />}></Route>
+        <Route path="/" element={<Records />}></Route>
         <Route path="pabili" element={<Pabili />}></Route>
+        <Route path="sales" element={<Sales />}></Route>
         <Route path="pahatid" element={<Pahatid />}></Route>
         <Route path="pakuha" element={<Pakuha />}></Route>
         <Route path="pasundo" element={<Pasundo />}></Route>

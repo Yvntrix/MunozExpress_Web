@@ -2,17 +2,22 @@ import {
   ActionIcon,
   Container,
   Divider,
-  Group, Paper,
+  Group,
+  Modal,
+  Paper,
   ScrollArea,
   Space,
-  Table, Title
+  Table,
+  Text,
+  Title,
 } from "@mantine/core";
 import { onChildChanged, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Plus } from "tabler-icons-react";
+import { Id, Plus, User } from "tabler-icons-react";
 import AddRider from "../components/AddRider";
 import LoaderComponent from "../components/LoaderComponent";
 import NoRow from "../components/NoRow";
+import RiderDetails from "../components/RiderDetails";
 import StartFirebase from "../firebase";
 
 export default function Rider() {
@@ -79,8 +84,16 @@ export default function Rider() {
   }, []);
 
   const [open, setOpen] = useState(false);
+  const [opened, setOpened] = useState(false);
+  const [id, setId] = useState("");
   const rows = projects.map((rider) => (
-    <tr key={rider.phone}>
+    <tr
+      key={rider.phone}
+      onClick={() => {
+        setId(rider.phone);
+        setOpened(true);
+      }}
+    >
       <td>{rider.firstName + " " + rider.lastName}</td>
       <td>{rider.email}</td>
       <td>{rider.phone}</td>
@@ -92,9 +105,23 @@ export default function Rider() {
   return (
     <Container fluid>
       <AddRider open={open} fn={call} />
+      <Modal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        title={
+          <Group spacing="xs">
+            <Id color="red" />
+            <Text weight={700}>Rider Details</Text>
+          </Group>
+        }
+      >
+        {<RiderDetails id={id} />}
+      </Modal>
       <Title order={2}>
         <Group spacing="xs" position="apart">
-          Rider Accounts
+          <Group>
+            <User /> <Title order={2}>Rider Accounts</Title>
+          </Group>
           <ActionIcon
             variant="outline"
             color="red"
