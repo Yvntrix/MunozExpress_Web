@@ -1,5 +1,6 @@
 import {
   ActionIcon,
+  Button,
   Container,
   Divider,
   Grid,
@@ -7,7 +8,7 @@ import {
   Paper,
   Text,
 } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import { onChildChanged, onValue, ref, remove } from "firebase/database";
 import { useEffect, useState } from "react";
 import {
   Basket,
@@ -19,12 +20,16 @@ import {
   Notes,
   Phone,
   RoadSign,
+  Trash,
   User,
 } from "tabler-icons-react";
 import ApproveButton from "../../components/ApproveButton";
 import StartFirebase from "../../firebase";
-
-export default function PasundoDetails(id: any) {
+type data = {
+  id: any;
+  fn: () => void;
+};
+export default function PasundoDetails({ id, fn }: data) {
   let completed: any[] = [];
   const [completeds, setCompleteds] = useState<any[]>([]);
   const db = StartFirebase();
@@ -39,7 +44,7 @@ export default function PasundoDetails(id: any) {
         (snapshot) => {
           const detail = snapshot.val();
           for (let i in detail) {
-            if (detail[i].TransactionId === id.id) {
+            if (detail[i].TransactionId === id) {
               completed.push(detail[i]);
             }
           }
@@ -55,7 +60,7 @@ export default function PasundoDetails(id: any) {
       (snapshot) => {
         const detail = snapshot.val();
         for (let i in detail) {
-          if (detail[i].TransactionId === id.id) {
+          if (detail[i].TransactionId === id) {
             completed.push(detail[i]);
           }
         }
@@ -67,6 +72,9 @@ export default function PasundoDetails(id: any) {
     );
   }, []);
   let search = "https://www.google.com/maps/place/";
+  function del() {
+    fn();
+  }
   return (
     <>
       {completeds.map(function (d) {
@@ -159,8 +167,21 @@ export default function PasundoDetails(id: any) {
               <ApproveButton
                 id={d.TransactionId}
                 transaction={d.ServiceType}
-                ongoing={d.Ongoing == 1 ? true : false }
+                ongoing={d.Ongoing == 1 ? true : false}
               />
+            ) : d.Cancelled === 1 ? (
+              <Group grow position="right">
+                <Button
+                  color="red"
+                  leftIcon={<Trash size={14} />}
+                  onClick={() => {
+                    del();
+                    remove(ref(db, "Transactions/Pasundo/" + d.TransactionId));
+                  }}
+                >
+                  Delete
+                </Button>
+              </Group>
             ) : (
               ""
             )}

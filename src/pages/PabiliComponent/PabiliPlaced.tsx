@@ -14,43 +14,14 @@ export default function PabiliPlaced() {
   let row = 0;
   let completed: any[] = [];
   useEffect(() => {
-    const transactRef = ref(db, "Transactions/Pabili");
-    onChildChanged(transactRef, (data) => {
-      row = 0;
-      completed = [];
-      setCompleteds(completed);
-      return onValue(
-        ref(db, "Transactions/Pabili"),
-        (snapshot) => {
-          const transactions = snapshot.val();
-          for (let i in transactions) {
-            if (
-              transactions[i].Cancelled == 0 &&
-              transactions[i].Completed == 0 &&
-              transactions[i].Ongoing == 0
-            ) {
-              if (transactions[i].TransactionId !== undefined) {
-                completed.push({
-                  id: transactions[i].TransactionId,
-                  name: transactions[i].CustomerName,
-                  phone: transactions[i].CustomerNumber,
-                });
-              }
-              row++;
-            }
-          }
-          if (row == 0) {
-            setNoRow(true);
-          }
-          setCompleteds(completed);
-          setTimeout(() => setLoader(true), 400);
-        },
-        {
-          onlyOnce: true,
-        }
-      );
-    });
+    fetchData();
+  }, []);
 
+  function fetchData() {
+    row = 0;
+    completed = [];
+    setCompleteds(completed);
+    setLoader(false);
     return onValue(
       ref(db, "Transactions/Pabili"),
       (snapshot) => {
@@ -79,7 +50,7 @@ export default function PabiliPlaced() {
         onlyOnce: true,
       }
     );
-  }, []);
+  }
 
   return (
     <Container fluid>
@@ -88,7 +59,7 @@ export default function PabiliPlaced() {
           noRow === true ? (
             <NoRow />
           ) : (
-            <TransactionTable type="Pabili" row={completeds} />
+            <TransactionTable type="Pabili" row={completeds} func={fetchData} />
           )
         ) : (
           <LoaderComponent />

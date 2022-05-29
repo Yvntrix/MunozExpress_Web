@@ -47,6 +47,7 @@ export function NavbarNested({ fn, yes }: func) {
   const { classes } = useStyles();
   let open;
   let openA;
+  let openB;
   if (pathname === "/pabili") {
     open = true;
   }
@@ -66,12 +67,18 @@ export function NavbarNested({ fn, yes }: func) {
   if (pathname === "/rider") {
     openA = true;
   }
+  if (pathname === "/records") {
+    openB = true;
+  }
+  if (pathname === "/sales") {
+    openB = true;
+  }
   const mockdata = [
     {
       label: "Records",
       icon: Files,
       lin: "",
-      initiallyOpened: openA,
+      initiallyOpened: openB,
       links: [
         { label: "Completed Transactions", link: "/records" },
         { label: "Rider Salary", link: "/sales" },

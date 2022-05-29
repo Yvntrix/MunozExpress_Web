@@ -1,7 +1,7 @@
 import { Button, Divider, Group, Modal, Text } from "@mantine/core";
 import { useModals } from "@mantine/modals";
 import { showNotification } from "@mantine/notifications";
-import { ref, update } from "firebase/database";
+import { onValue, ref, update } from "firebase/database";
 import { useState } from "react";
 import {
   Check,
@@ -42,9 +42,21 @@ export default function ApproveButton({ id, transaction, ongoing }: Fn) {
       icon: <MoodSad />,
     });
     const db = StartFirebase();
-    return update(ref(db, "Transactions/" + transaction + "/" + id), {
-      Cancelled: 1,
-      Ongoing: 0,
+
+    onValue(ref(db, "Transactions/" + transaction + "/" + id), (snapshot) => {
+      if (snapshot.val().AssignedTo == "") {
+        update(ref(db, "Transactions/" + transaction + "/" + id), {
+          Cancelled: 1,
+        });
+      } else {
+        update(ref(db, "Transactions/" + transaction + "/" + id), {
+          Cancelled: 1,
+          Ongoing: 0,
+        });
+        update(ref(db, "riders-id/" + snapshot.val().AssignedTo), {
+          Idle: 0,
+        });
+      }
     });
   }
 

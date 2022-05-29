@@ -25,38 +25,14 @@ export default function PasundoOngoing() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
-    const transactRef = ref(db, "Transactions/Pasundo");
-    onChildChanged(transactRef, (data) => {
-      row = 0;
-      completed = [];
-      setCompleteds(completed);
-      return onValue(
-        ref(db, "Transactions/Pasundo"),
-        (snapshot) => {
-          const transactions = snapshot.val();
-          for (let i in transactions) {
-            if (transactions[i].Ongoing === 1) {
-              if (transactions[i].TransactionId !== undefined) {
-                completed.push({
-                  id: transactions[i].TransactionId,
-                  name: transactions[i].CustomerName,
-                  phone: transactions[i].CustomerNumber,
-                });
-              }
-              row += 1;
-            }
-          }
-          if (row == 0) {
-            setNoRow(true);
-          }
-          setCompleteds(completed);
-          setTimeout(() => setLoader(true), 400);
-        },
-        {
-          onlyOnce: true,
-        }
-      );
-    });
+    fetchData();
+  }, []);
+
+  function fetchData() {
+    row = 0;
+    completed = [];
+    setCompleteds(completed);
+    setLoader(false);
     return onValue(
       ref(db, "Transactions/Pasundo"),
       (snapshot) => {
@@ -83,7 +59,7 @@ export default function PasundoOngoing() {
         onlyOnce: true,
       }
     );
-  }, []);
+  }
 
   return (
     <Container fluid>
@@ -92,7 +68,11 @@ export default function PasundoOngoing() {
           noRow === true ? (
             <NoRow />
           ) : (
-            <TransactionTable row={completeds} type="Pasundo" />
+            <TransactionTable
+              row={completeds}
+              type="Pasundo"
+              func={fetchData}
+            />
           )
         ) : (
           <LoaderComponent />

@@ -25,40 +25,16 @@ export default function PahatidOngoing() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
-    const transactRef = ref(db, "Transactions/Pahatid");
-    onChildChanged(transactRef, (data) => {
-      row = 0;
-      completed = [];
-      setCompleteds(completed);
-      return onValue(
-        ref(db, "Transactions/Pahatid"),
-        (snapshot) => {
-          const transactions = snapshot.val();
-          for (let i in transactions) {
-            if (transactions[i].Ongoing === 1) {
-              if (transactions[i].TransactionId !== undefined) {
-                completed.push({
-                  id: transactions[i].TransactionId,
-                  name: transactions[i].CustomerName,
-                  phone: transactions[i].CustomerNumber,
-                });
-              }
-              row += 1;
-            }
-          }
-          if (row == 0) {
-            setNoRow(true);
-          }
-          setCompleteds(completed);
-          setTimeout(() => setLoader(true), 400);
-        },
-        {
-          onlyOnce: true,
-        }
-      );
-    });
+    fetchData();
+  }, []);
+
+  function fetchData() {
+    row = 0;
+    completed = [];
+    setCompleteds(completed);
+    setLoader(false);
     return onValue(
-      ref(db, "Transactions/Pahatid"),
+      ref(db, "Transactions/Ongoing"),
       (snapshot) => {
         const transactions = snapshot.val();
         for (let i in transactions) {
@@ -83,8 +59,7 @@ export default function PahatidOngoing() {
         onlyOnce: true,
       }
     );
-  }, []);
-
+  }
   return (
     <Container fluid>
       <Paper radius="md" p="md" withBorder>
@@ -92,7 +67,11 @@ export default function PahatidOngoing() {
           noRow === true ? (
             <NoRow />
           ) : (
-            <TransactionTable row={completeds} type="Pahatid" />
+            <TransactionTable
+              row={completeds}
+              type="Pahatid"
+              func={fetchData}
+            />
           )
         ) : (
           <LoaderComponent />

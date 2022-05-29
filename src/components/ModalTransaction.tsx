@@ -13,6 +13,9 @@ type data = {
   type: any;
 };
 export default function ModalTransactions({ id, open, fn, type }: data) {
+  function func() {
+    fn();
+  }
   return (
     <Modal
       closeOnEscape
@@ -48,16 +51,16 @@ export default function ModalTransactions({ id, open, fn, type }: data) {
     >
       {(() => {
         if (type == "Pabili") {
-          return <PabiliDetails id={id} />;
+          return <PabiliDetails id={id} fn={func} />;
         }
         if (type == "Pahatid") {
-          return <PahatidDetails id={id} />;
+          return <PahatidDetails id={id} fn={func} />;
         }
         if (type == "Pakuha") {
-          return <PakuhaDetails id={id} />;
+          return <PakuhaDetails id={id}  fn={func}/>;
         }
         if (type == "Pasundo") {
-          return <PasundoDetails id={id} />;
+          return <PasundoDetails id={id} fn={func} />;
         }
       })()}
     </Modal>

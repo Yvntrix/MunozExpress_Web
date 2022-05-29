@@ -1,17 +1,20 @@
 import {
   ActionIcon,
+  Button,
   Center,
   Divider,
   Grid,
   Group,
+  Modal,
   Paper,
   ScrollArea,
   Table,
   Text,
+  Title,
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
-import { isSameMonth } from "@mantine/dates";
+import { isSameDate, Month } from "@mantine/dates";
 import dayjs from "dayjs";
 import { onValue, ref } from "firebase/database";
 import _ from "lodash";
@@ -25,21 +28,24 @@ import {
 } from "react-table";
 import {
   ArrowsSort,
+  Calendar,
   Cash,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
   ClipboardCheck,
+  ClipboardList,
   Refresh,
   TableExport,
 } from "tabler-icons-react";
 import * as XLSX from "xlsx";
 import { GlobalFilter } from "../../components/GlobalFilter";
 import LoaderComponent from "../../components/LoaderComponent";
+import ModalTransactions from "../../components/ModalTransaction";
 import NoRow from "../../components/NoRow";
 import StartFirebase from "../../firebase";
-export default function MonthlySalary() {
+export default function DailySalary() {
   const db = StartFirebase();
   const [completeds, setCompleteds] = useState<any[]>([]);
   const [noRow, setNoRow] = useState(false);
@@ -47,10 +53,10 @@ export default function MonthlySalary() {
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
-    fetchData();
+    fetchData(value);
   }, []);
 
-  function fetchData() {
+  function fetchData(day: Date) {
     let sort;
     let salary = 0;
     let tot = 0;
@@ -70,8 +76,8 @@ export default function MonthlySalary() {
               if (i == "Pabili") {
                 for (let j in transactions[i]) {
                   if (
-                    isSameMonth(
-                      new Date(dayjs().format()),
+                    isSameDate(
+                      day,
                       new Date(
                         dayjs(transactions[i][j].TimeCompleted).format(
                           "YYYY-MM-DD"
@@ -91,8 +97,8 @@ export default function MonthlySalary() {
               if (i == "Pahatid") {
                 for (let j in transactions[i]) {
                   if (
-                    isSameMonth(
-                      new Date(dayjs().format()),
+                    isSameDate(
+                      day,
                       new Date(
                         dayjs(transactions[i][j].TimeCompleted).format(
                           "YYYY-MM-DD"
@@ -112,8 +118,8 @@ export default function MonthlySalary() {
               if (i == "Pakuha") {
                 for (let j in transactions[i]) {
                   if (
-                    isSameMonth(
-                      new Date(dayjs().format()),
+                    isSameDate(
+                      day,
                       new Date(
                         dayjs(transactions[i][j].TimeCompleted).format(
                           "YYYY-MM-DD"
@@ -133,8 +139,8 @@ export default function MonthlySalary() {
               if (i == "Pasundo") {
                 for (let j in transactions[i]) {
                   if (
-                    isSameMonth(
-                      new Date(dayjs().format()),
+                    isSameDate(
+                      day,
                       new Date(
                         dayjs(transactions[i][j].TimeCompleted).format(
                           "YYYY-MM-DD"
@@ -161,7 +167,7 @@ export default function MonthlySalary() {
             });
 
             salary = 0;
-            sort = _.orderBy(completed, ["salary"], ["desc"]);
+            sort = _.orderBy(completed, ["salary"], "desc");
             setCompleteds(sort);
           });
         });
@@ -174,7 +180,6 @@ export default function MonthlySalary() {
       setTimeout(() => setLoader(true), 400);
     });
   }
-
   const COLUMNS = [
     {
       Header: "ID",
@@ -237,6 +242,12 @@ export default function MonthlySalary() {
   const { globalFilter } = state;
   // @ts-expect-error
   const { pageIndex, pageSize } = state;
+  function call() {
+    setOpened(false);
+  }
+  const [opened, setOpened] = useState(false);
+  const [id, setId] = useState("");
+  const [stype, setStype] = useState("");
 
   function toExcel() {
     let wb = XLSX.utils.book_new(),
@@ -244,10 +255,54 @@ export default function MonthlySalary() {
 
     XLSX.utils.book_append_sheet(wb, ws, "MySheet1");
 
-    XLSX.writeFile(wb, dayjs().format("MM/YYYY") + "_Salary.xlsx");
+    XLSX.writeFile(wb, dayjs(value).format("MM/DD/YYYY") + ".xlsx");
   }
+  const [value, setValue] = useState(new Date());
+  const [open, setOpen] = useState(false);
   return (
     <>
+      <ModalTransactions type={stype} id={id} open={opened} fn={call} />
+      <Modal
+        size="xs"
+        opened={open}
+        onClose={() => setOpen(false)}
+        withCloseButton={false}
+      >
+        {
+          <>
+            {" "}
+            <Group spacing="xs" position="center">
+              <Calendar color="red" />
+              <Text weight={700}> Choose Day</Text>
+            </Group>
+            <Divider my="sm" variant="dashed" />
+            <Group position="center">
+              <Month
+                firstDayOfWeek="sunday"
+                month={value}
+                value={value}
+                onChange={(e) => {
+                  setValue(e);
+
+                  setOpen(false);
+                  fetchData(e);
+                }}
+              />
+            </Group>
+          </>
+        }
+      </Modal>
+      <Group position="center">
+        <Title order={3}>{dayjs(value).format("MMM DD YYYY")}</Title>
+        <Button
+          variant="outline"
+          color="red"
+          leftIcon={<Calendar />}
+          onClick={() => setOpen(true)}
+        >
+          Choose Date
+        </Button>
+      </Group>
       <Grid justify="center" m="sm">
         <Grid.Col md={6} lg={3}>
           <Paper withBorder p="md" radius="md">
@@ -269,7 +324,7 @@ export default function MonthlySalary() {
           <Paper withBorder p="md" radius="md">
             <Group position="apart">
               <Text size="xs" color="dimmed">
-                Total Sale
+                Total Sales
               </Text>
               <Cash size={22} />
             </Group>
@@ -281,7 +336,11 @@ export default function MonthlySalary() {
       </Grid>
       <Divider my="sm" variant="dashed" />
       <Group position="right" spacing="xs">
-        <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+        <GlobalFilter
+          filter={globalFilter}
+          not={noRow}
+          setFilter={setGlobalFilter}
+        />
         <Tooltip
           label="Reload Data"
           withArrow
@@ -291,10 +350,15 @@ export default function MonthlySalary() {
           transitionDuration={300}
           transitionTimingFunction="ease"
         >
-          <ActionIcon variant="outline" color="red" onClick={() => fetchData()}>
+          <ActionIcon
+            variant="outline"
+            color="red"
+            onClick={() => fetchData(value)}
+          >
             <Refresh size={16} />
           </ActionIcon>
         </Tooltip>
+
         <Tooltip
           label="Export Data to Excel "
           withArrow
@@ -304,7 +368,12 @@ export default function MonthlySalary() {
           transitionDuration={300}
           transitionTimingFunction="ease"
         >
-          <ActionIcon variant="outline" color="red" onClick={() => toExcel()}>
+          <ActionIcon
+            disabled={noRow}
+            variant="outline"
+            color="red"
+            onClick={() => toExcel()}
+          >
             <TableExport size={16} />
           </ActionIcon>
         </Tooltip>

@@ -21,7 +21,7 @@ function App() {
 
   useHotkeys([["mod+J", () => toggleColorScheme()]]);
   const [yes, setYes] = useLocalStorage({
-    key: "log in",
+    key: "log on",
     defaultValue: 0,
   });
   function call() {

@@ -1,4 +1,5 @@
 import {
+  ActionIcon,
   Center,
   Container,
   Group,
@@ -6,15 +7,26 @@ import {
   ScrollArea,
   Table,
   Text,
+  Tooltip,
   UnstyledButton,
 } from "@mantine/core";
 import { useMemo, useState } from "react";
 import ModalTransactions from "./ModalTransaction";
 import { useGlobalFilter, useSortBy, useTable } from "react-table";
-import { ArrowsSort, ChevronDown, ChevronUp } from "tabler-icons-react";
+import {
+  ArrowsSort,
+  ChevronDown,
+  ChevronUp,
+  Refresh,
+  TableExport,
+} from "tabler-icons-react";
 import { GlobalFilter } from "./GlobalFilter";
-
-export default function TransactionTable({ row, type }: any) {
+type fc = {
+  func: () => void;
+  row: any;
+  type: any;
+};
+export default function TransactionTable({ row, type, func }: fc) {
   const [opened, setOpened] = useState(false);
   const [id, setId] = useState("");
   function call() {
@@ -47,6 +59,10 @@ export default function TransactionTable({ row, type }: any) {
     {
       Header: "Phone",
       accessor: "phone",
+      //@ts-ignore
+      Cell: ({ value }) => {
+        return "+63" + value;
+      },
     },
   ];
 
@@ -63,6 +79,7 @@ export default function TransactionTable({ row, type }: any) {
     setGlobalFilter,
   } = useTable(
     {
+      // @ts-ignore
       columns,
       data,
     },
@@ -76,9 +93,12 @@ export default function TransactionTable({ row, type }: any) {
   return (
     <>
       <ModalTransactions type={type} id={id} open={opened} fn={call} />
-      <Container size="xs" px="xs">
+      <Group position="right" spacing="xs">
         <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
-      </Container>
+        <ActionIcon variant="outline" color="red" onClick={func}>
+          <Refresh size={16} />
+        </ActionIcon>
+      </Group>
       <Paper radius="md" p="md" withBorder>
         <ScrollArea type="always">
           <Table

@@ -58,7 +58,7 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
             const ridersid = snapshot.val();
             Object.keys(ridersid).forEach((e) => {
               if (rider[i].Phone == ridersid[e].Phone) {
-                if (ridersid[e].Online == 1) {
+                if (ridersid[e].Online == 1 && ridersid[e].Idle == 0) {
                   riderList.push({
                     value: e,
                     label: rider[i].FirstName + " " + rider[i].LastName,
@@ -92,10 +92,13 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
       setTimeout(() => {
         fn(s);
         const db = StartFirebase();
-        return update(ref(db, "Transactions/" + transaction + "/" + id), {
+        update(ref(db, "Transactions/" + transaction + "/" + id), {
           Ongoing: 1,
           AssignedTo: s,
           TimeConfirmed: dayjs().format("YYYY-MM-DD HH:mm:ss"),
+        });
+        update(ref(db, "riders-id/" + s), {
+          Idle: 1,
         });
       }, 700);
     }
@@ -113,7 +116,6 @@ export default function AssignToRider({ fn, id, transaction }: Fn) {
             placeholder="Pick a Rider"
             onChange={(event) => {
               s = event;
-              console.log(event);
             }}
             data={riderList}
             icon={<User size={14} />}

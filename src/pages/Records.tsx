@@ -16,7 +16,7 @@ export default function Records() {
     <>
       <Container fluid>
         <Group>
-          <ClipboardCheck /> <Title order={2}>Records</Title>
+          <ClipboardCheck /> <Title order={2}>Completed Transactions</Title>
         </Group>
         <Space h="xs" />
         <Divider my="sm" variant="dashed" />

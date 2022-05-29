@@ -26,44 +26,14 @@ export default function PakuhaPlaced() {
   let row = 0;
   let completed: any[] = [];
   useEffect(() => {
-    const transactRef = ref(db, "Transactions/Pakuha");
+    fetchData();
+  }, []);
 
-    onChildChanged(transactRef, (data) => {
-      row = 0;
-      completed = [];
-      setCompleteds(completed);
-      return onValue(
-        ref(db, "Transactions/Pakuha"),
-        (snapshot) => {
-          const transactions = snapshot.val();
-          for (let i in transactions) {
-            if (
-              transactions[i].Cancelled == 0 &&
-              transactions[i].Completed == 0 &&
-              transactions[i].Ongoing == 0
-            ) {
-              if (transactions[i].TransactionId !== undefined) {
-                completed.push({
-                  id: transactions[i].TransactionId,
-                  name: transactions[i].CustomerName,
-                  phone: transactions[i].CustomerNumber,
-                });
-              }
-              row++;
-            }
-          }
-          if (row == 0) {
-            setNoRow(true);
-          }
-          setCompleteds(completed);
-          setTimeout(() => setLoader(true), 400);
-        },
-        {
-          onlyOnce: true,
-        }
-      );
-    });
-
+  function fetchData() {
+    row = 0;
+    completed = [];
+    setCompleteds(completed);
+    setLoader(false);
     return onValue(
       ref(db, "Transactions/Pakuha"),
       (snapshot) => {
@@ -92,8 +62,7 @@ export default function PakuhaPlaced() {
         onlyOnce: true,
       }
     );
-  }, []);
-
+  }
   return (
     <Container fluid>
       <Paper radius="md" p="md" withBorder>
@@ -101,7 +70,7 @@ export default function PakuhaPlaced() {
           noRow === true ? (
             <NoRow />
           ) : (
-            <TransactionTable row={completeds} type="Pakuha" />
+            <TransactionTable row={completeds} type="Pakuha"  func={fetchData}/>
           )
         ) : (
           <LoaderComponent />

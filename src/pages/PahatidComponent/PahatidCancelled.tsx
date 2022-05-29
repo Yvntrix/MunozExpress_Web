@@ -8,7 +8,7 @@ import {
   Table,
   Text,
 } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import { onChildChanged, onChildRemoved, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { ListDetails } from "tabler-icons-react";
 import LoaderComponent from "../../components/LoaderComponent";
@@ -25,38 +25,17 @@ export default function PahatidCancelled() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
-    const transactRef = ref(db, "Transactions/Pahatid");
-    onChildChanged(transactRef, (data) => {
-      row = 0;
-      completed = [];
-      setCompleteds(completed);
-      return onValue(
-        ref(db, "Transactions/Pahatid"),
-        (snapshot) => {
-          const transactions = snapshot.val();
-          for (let i in transactions) {
-            if (transactions[i].Cancelled === 1) {
-              if (transactions[i].TransactionId !== undefined) {
-                completed.push({
-                  id: transactions[i].TransactionId,
-                  name: transactions[i].CustomerName,
-                  phone: transactions[i].CustomerNumber,
-                });
-              }
-              row += 1;
-            }
-          }
-          if (row == 0) {
-            setNoRow(true);
-          }
-          setCompleteds(completed);
-          setTimeout(() => setLoader(true), 400);
-        },
-        {
-          onlyOnce: true,
-        }
-      );
+    onChildRemoved(ref(db, "Transactions/Pahatid"), (data) => {
+      fetchData();
     });
+    fetchData();
+  }, []);
+
+  function fetchData() {
+    setLoader(false);
+    row = 0;
+    completed = [];
+    setCompleteds(completed);
     return onValue(
       ref(db, "Transactions/Pahatid"),
       (snapshot) => {
@@ -83,7 +62,7 @@ export default function PahatidCancelled() {
         onlyOnce: true,
       }
     );
-  }, []);
+  }
 
   return (
     <Container fluid>
@@ -92,7 +71,11 @@ export default function PahatidCancelled() {
           noRow === true ? (
             <NoRow />
           ) : (
-            <TransactionTable row={completeds} type="Pahatid" />
+            <TransactionTable
+              row={completeds}
+              type="Pahatid"
+              func={fetchData}
+            />
           )
         ) : (
           <LoaderComponent />

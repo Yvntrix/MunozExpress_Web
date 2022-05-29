@@ -43,6 +43,7 @@ export default function Rider() {
               lastName: riders[rider].LastName,
               phone: riders[rider].Phone,
               email: riders[rider].Email,
+              password: riders[rider].Password,
             });
             row++;
           }
@@ -67,6 +68,7 @@ export default function Rider() {
             lastName: riders[rider].LastName,
             phone: riders[rider].Phone,
             email: riders[rider].Email,
+            password: riders[rider].Password,
           });
           row++;
         }
@@ -102,6 +104,10 @@ export default function Rider() {
   function call() {
     setOpen(false);
   }
+
+  function fn() {
+    setOpened(false);
+  }
   return (
     <Container fluid>
       <AddRider open={open} fn={call} />
@@ -115,7 +121,7 @@ export default function Rider() {
           </Group>
         }
       >
-        {<RiderDetails id={id} />}
+        {<RiderDetails id={id} func={fn} />}
       </Modal>
       <Title order={2}>
         <Group spacing="xs" position="apart">

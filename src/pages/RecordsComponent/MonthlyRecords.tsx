@@ -33,6 +33,7 @@ import {
   ChevronUp,
   ClipboardCheck,
   ClipboardList,
+  Refresh,
   TableExport,
 } from "tabler-icons-react";
 import * as XLSX from "xlsx";
@@ -46,16 +47,26 @@ export default function MonthlyRecords() {
   const [completeds, setCompleteds] = useState<any[]>([]);
   const [noRow, setNoRow] = useState(false);
   const [loader, setLoader] = useState(false);
-  let completed: any[] = [];
-  let row = 0;
   const [total, setTotal] = useState(0);
   const [complete, setComplete] = useState(0);
   const [orders, setOrders] = useState(0);
-  let tot = 0;
-  let comtot = 0;
-  let order = 0;
-  let sort;
+
   useEffect(() => {
+    fetchData();
+  }, []);
+
+  function fetchData() {
+    let tot = 0;
+    let comtot = 0;
+    let order = 0;
+    let sort;
+    let row = 0;
+    let completed: any[] = [];
+    setTotal(0);
+    setComplete(0);
+    setOrders(0);
+    setNoRow(false);
+    setLoader(false);
     onValue(
       ref(db, "Transactions"),
       (snapshot) => {
@@ -289,7 +300,7 @@ export default function MonthlyRecords() {
         onlyOnce: true,
       }
     );
-  }, []);
+  }
 
   const COLUMNS = [
     {
@@ -341,7 +352,7 @@ export default function MonthlyRecords() {
     // @ts-expect-error
     setPageSize,
     state,
-    // @ts-expect-error setGLobalFilter is not in type def
+    // @ts-expect-error
     setGlobalFilter,
   } = useTable(
     {
@@ -353,7 +364,7 @@ export default function MonthlyRecords() {
     usePagination
   );
 
-  // @ts-expect-error setGLobalFilter is not in type def
+  // @ts-expect-error
   const { globalFilter } = state;
   // @ts-expect-error
   const { pageIndex, pageSize } = state;
@@ -406,7 +417,7 @@ export default function MonthlyRecords() {
           <Paper withBorder p="md" radius="md">
             <Group position="apart">
               <Text size="xs" color="dimmed">
-                Total Revenue
+                Total Sales
               </Text>
               <Cash size={22} />
             </Group>
@@ -419,6 +430,19 @@ export default function MonthlyRecords() {
       <Divider my="sm" variant="dashed" />
       <Group position="right" spacing="xs">
         <GlobalFilter filter={globalFilter} setFilter={setGlobalFilter} />
+        <Tooltip
+          label="Reload Data"
+          withArrow
+          placement="end"
+          position="top"
+          transition="pop-bottom-right"
+          transitionDuration={300}
+          transitionTimingFunction="ease"
+        >
+          <ActionIcon variant="outline" color="red" onClick={() => fetchData()}>
+            <Refresh size={16} />
+          </ActionIcon>
+        </Tooltip>
         <Tooltip
           label="Export Data to Excel "
           withArrow
@@ -442,7 +466,7 @@ export default function MonthlyRecords() {
             <>
               <ScrollArea type="auto" p="sm">
                 <Table
-                  sx={{ minWidth: 900 }}
+                  sx={{ minWidth: 950 }}
                   highlightOnHover
                   striped
                   {...getTableProps()}
@@ -501,6 +525,7 @@ export default function MonthlyRecords() {
                             // @ts-expect-error
                             setStype(row.original.service);
                             setOpened(true);
+                            console.log(page);
                           }}
                         >
                           {row.cells.map((cell) => {

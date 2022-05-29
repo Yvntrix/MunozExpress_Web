@@ -36,6 +36,7 @@ import {
   ChevronUp,
   ClipboardCheck,
   ClipboardList,
+  Refresh,
   TableExport,
 } from "tabler-icons-react";
 import * as XLSX from "xlsx";
@@ -131,9 +132,9 @@ export default function DailyRecords() {
                     );
                   }
                 );
+                row += 1;
               }
             }
-            row += 1;
           }
         }
         if (i == "Pahatid") {
@@ -188,8 +189,8 @@ export default function DailyRecords() {
                     );
                   }
                 );
+                row += 1;
               }
-              row += 1;
             }
           }
         }
@@ -245,8 +246,8 @@ export default function DailyRecords() {
                     );
                   }
                 );
+                row += 1;
               }
-              row += 1;
             }
           }
         }
@@ -302,8 +303,8 @@ export default function DailyRecords() {
                     );
                   }
                 );
+                row += 1;
               }
-              row += 1;
             }
           }
         }
@@ -475,7 +476,7 @@ export default function DailyRecords() {
           <Paper withBorder p="md" radius="md">
             <Group position="apart">
               <Text size="xs" color="dimmed">
-                Total Revenue
+                Total Sales
               </Text>
               <Cash size={22} />
             </Group>
@@ -492,6 +493,24 @@ export default function DailyRecords() {
           not={noRow}
           setFilter={setGlobalFilter}
         />
+        <Tooltip
+          label="Reload Data"
+          withArrow
+          placement="end"
+          position="top"
+          transition="pop-bottom-right"
+          transitionDuration={300}
+          transitionTimingFunction="ease"
+        >
+          <ActionIcon
+            variant="outline"
+            color="red"
+            onClick={() => fetchData(value)}
+          >
+            <Refresh size={16} />
+          </ActionIcon>
+        </Tooltip>
+
         <Tooltip
           label="Export Data to Excel "
           withArrow
@@ -520,7 +539,7 @@ export default function DailyRecords() {
             <>
               <ScrollArea type="auto" p="sm">
                 <Table
-                  sx={{ minWidth: 900 }}
+                  sx={{ minWidth: 950 }}
                   highlightOnHover
                   striped
                   {...getTableProps()}

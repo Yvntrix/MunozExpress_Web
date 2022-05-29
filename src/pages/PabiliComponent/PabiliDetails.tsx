@@ -1,8 +1,9 @@
 import StartFirebase from "../../firebase";
-import { ref, onValue, onChildChanged } from "firebase/database";
+import { ref, onValue, onChildChanged, remove } from "firebase/database";
 import { useEffect, useState } from "react";
 import {
   ActionIcon,
+  Button,
   Container,
   Divider,
   Grid,
@@ -22,17 +23,20 @@ import {
   Phone,
   RoadSign,
   Tag,
+  Trash,
   User,
 } from "tabler-icons-react";
 import ApproveButton from "../../components/ApproveButton";
-
-function PabiliDetails(id: any) {
+type data = {
+  id: any;
+  fn: () => void;
+};
+function PabiliDetails({ id, fn }: data) {
   let completed: any[] = [];
   const [completeds, setCompleteds] = useState<any[]>([]);
   const db = StartFirebase();
   useEffect(() => {
     const detailRef = ref(db, "Transactions/Pabili");
-
     onChildChanged(detailRef, (data) => {
       completed = [];
       setCompleteds(completed);
@@ -41,7 +45,7 @@ function PabiliDetails(id: any) {
         (snapshot) => {
           const detail = snapshot.val();
           for (let i in detail) {
-            if (detail[i].TransactionId === id.id) {
+            if (detail[i].TransactionId === id) {
               completed.push(detail[i]);
             }
           }
@@ -58,7 +62,7 @@ function PabiliDetails(id: any) {
       (snapshot) => {
         const detail = snapshot.val();
         for (let i in detail) {
-          if (detail[i].TransactionId === id.id) {
+          if (detail[i].TransactionId === id) {
             completed.push(detail[i]);
           }
         }
@@ -70,6 +74,9 @@ function PabiliDetails(id: any) {
     );
   }, []);
   let search = "https://www.google.com/maps/place/";
+  function del() {
+    fn();
+  }
   return (
     <>
       {completeds.map(function (d) {
@@ -224,8 +231,21 @@ function PabiliDetails(id: any) {
               <ApproveButton
                 id={d.TransactionId}
                 transaction={d.ServiceType}
-                ongoing={d.Ongoing == 1 ? true : false }
+                ongoing={d.Ongoing == 1 ? true : false}
               />
+            ) : d.Cancelled === 1 ? (
+              <Group grow position="right">
+                <Button
+                  color="red"
+                  leftIcon={<Trash size={14} />}
+                  onClick={() => {
+                    del();
+                    remove(ref(db, "Transactions/Pabili/" + d.TransactionId));
+                  }}
+                >
+                  Delete
+                </Button>
+              </Group>
             ) : (
               ""
             )}

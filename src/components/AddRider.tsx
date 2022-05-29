@@ -62,7 +62,7 @@ function RiderData() {
         Number(values.phone).toString().length == 10
           ? null
           : "Phone Number is not Valid",
-      // pass: values.pass.length < 6 ? null : "Password is too short",
+      pass: values.pass.length < 6 ? "Password is too short" : null,
       cpass: values.pass == values.cpass ? null : "Passwords do not match",
     }),
   });
@@ -97,6 +97,7 @@ function RiderData() {
                 Phone: "+63" + phone,
                 Password: password,
                 Online: 0,
+                Idle: 0,
               }).then(
                 (onFullFilled) => {
                   // write rider data in database

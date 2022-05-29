@@ -1,40 +1,50 @@
-import { ActionIcon, Container, Divider, Group, Text } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import {
+  ActionIcon,
+  Button,
+  Container,
+  Divider,
+  Group,
+  Text,
+  TextInput,
+} from "@mantine/core";
+import { showNotification } from "@mantine/notifications";
+import { click } from "@testing-library/user-event/dist/click";
+import {
+  signInWithEmailAndPassword,
+  signOut,
+  updatePassword,
+} from "firebase/auth";
+import { onValue, ref, update } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Certificate, Id, Notebook, Phone, Send } from "tabler-icons-react";
-import StartFirebase from "../firebase";
-
-export default function RiderDetails(id: any) {
+import {
+  Certificate,
+  CircleCheck,
+  CircleX,
+  Edit,
+  Lock,
+  Notebook,
+  Phone,
+  Send,
+} from "tabler-icons-react";
+import StartFirebase, { auth } from "../firebase";
+type fc = {
+  func: () => void;
+  id: any;
+};
+export default function RiderDetails({ id, func }: fc) {
   let completed: any[] = [];
   const [completeds, setCompleteds] = useState<any[]>([]);
   const db = StartFirebase();
 
   useEffect(() => {
-    const detailRef = ref(db, "riders/" + id.id);
-    onChildChanged(detailRef, (data) => {
-      completed = [];
-      setCompleteds(completed);
-      return onValue(
-        ref(db, "riders/" + id.id),
-        (snapshot) => {
-          const detail = snapshot.val();
-          completed.push({
-            firstName: detail.FirstName,
-            lastName: detail.LastName,
-            phone: detail.Phone,
-            email: detail.Email,
-          });
+    fetchData();
+  }, []);
 
-          setCompleteds(completed);
-        },
-        {
-          onlyOnce: true,
-        }
-      );
-    });
-
+  function fetchData() {
+    completed = [];
+    setCompleteds(completed);
     return onValue(
-      ref(db, "riders/" + id.id),
+      ref(db, "riders/" + id),
       (snapshot) => {
         const detail = snapshot.val();
 
@@ -43,6 +53,7 @@ export default function RiderDetails(id: any) {
           lastName: detail.LastName,
           phone: detail.Phone,
           email: detail.Email,
+          password: detail.Password,
         });
         setCompleteds(completed);
       },
@@ -50,10 +61,77 @@ export default function RiderDetails(id: any) {
         onlyOnce: true,
       }
     );
-  }, []);
+  }
 
   let call = "tel:";
+  const [value, setValue] = useState("******");
+  const [dis, setDis] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [clicked, setCLicked] = useState(false);
+  function updatePass(email: any, password: any) {
+    if (value.length > 6) {
+      setLoading(true);
+      signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+          // Signed in
 
+          updatePassword(userCredential.user, value)
+            .then(() => {
+              update(ref(db, "riders/" + id), {
+                Password: value,
+              });
+
+              onValue(
+                ref(db, "riders-id/"),
+                (snap) => {
+                  const rider = snap.val();
+                  for (let i in rider) {
+                    if (rider[i].Phone == id) {
+                      update(ref(db, "riders-id/" + i), {
+                        Password: value,
+                      });
+                    }
+                  }
+                },
+                {
+                  onlyOnce: true,
+                }
+              );
+
+              signOut(auth)
+                .then(() => {
+                  // Sign-out successful.
+                  setLoading(false);
+                  showNotification({
+                    color: "green",
+                    title: "Success",
+                    message: "Updated Successfully",
+                    icon: <CircleCheck />,
+                  });
+                  func();
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            })
+            .catch((error) => {
+              // An error ocurred
+              // ...
+            });
+        })
+        .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+        });
+    } else {
+      showNotification({
+        color: "red",
+        title: "Error",
+        message: "Password is too Short",
+        icon: <CircleX />,
+      });
+    }
+  }
   return (
     <>
       {completeds.map(function (d) {
@@ -108,6 +186,39 @@ export default function RiderDetails(id: any) {
               </Group>
             </Text>
             <Text>{d.email}</Text> <Divider my="sm" variant="dashed" />
+            <Text weight={700}>
+              <Group spacing="xs">
+                <Lock color="red" />
+                Password
+              </Group>
+            </Text>
+            <TextInput
+              pt="xs"
+              value={value}
+              onClick={(e) => {
+                if (!clicked) {
+                  setValue(d.password);
+                  setCLicked(true);
+                }
+              }}
+              onChange={(event) => {
+                setValue(event.currentTarget.value);
+                setDis(false);
+              }}
+            />
+            <Divider my="sm" variant="dashed" />
+            <Group grow position="right">
+              <Button
+                disabled={dis}
+                loading={loading}
+                leftIcon={<Edit size={14} />}
+                onClick={() => {
+                  updatePass(d.email, d.password);
+                }}
+              >
+                Update
+              </Button>
+            </Group>
           </Container>
         );
       })}
