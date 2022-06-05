@@ -1,5 +1,11 @@
 import { Container, Paper } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import dayjs from "dayjs";
+import {
+  onChildChanged,
+  onChildRemoved,
+  onValue,
+  ref,
+} from "firebase/database";
 import { useEffect, useState } from "react";
 import LoaderComponent from "../../components/LoaderComponent";
 import NoRow from "../../components/NoRow";
@@ -14,6 +20,12 @@ export default function PabiliPlaced() {
   let row = 0;
   let completed: any[] = [];
   useEffect(() => {
+    onChildRemoved(ref(db, "Transactions/Pabili"), (data) => {
+      fetchData();
+    });
+    onChildChanged(ref(db, "Transactions/Pabili"), (data) => {
+      fetchData();
+    });
     fetchData();
   }, []);
 
@@ -36,6 +48,9 @@ export default function PabiliPlaced() {
               id: transactions[i].TransactionId,
               name: transactions[i].CustomerName,
               phone: transactions[i].CustomerNumber,
+              placed: dayjs(transactions[i].TimePlaced).format(
+                "MMM DD YYYY, hh:mm A"
+              ),
             });
             row++;
           }

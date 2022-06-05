@@ -8,7 +8,12 @@ import {
   Table,
   Text,
 } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import {
+  onChildChanged,
+  onChildRemoved,
+  onValue,
+  ref,
+} from "firebase/database";
 import { useEffect, useState } from "react";
 import { ListDetails } from "tabler-icons-react";
 import LoaderComponent from "../../components/LoaderComponent";
@@ -25,6 +30,12 @@ export default function PahatidOngoing() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
+    onChildRemoved(ref(db, "Transactions/Pahatid"), (data) => {
+      fetchData();
+    });
+    onChildChanged(ref(db, "Transactions/Pahatid"), (data) => {
+      fetchData();
+    });
     fetchData();
   }, []);
 
@@ -34,7 +45,7 @@ export default function PahatidOngoing() {
     setCompleteds(completed);
     setLoader(false);
     return onValue(
-      ref(db, "Transactions/Ongoing"),
+      ref(db, "Transactions/Pahatid"),
       (snapshot) => {
         const transactions = snapshot.val();
         for (let i in transactions) {

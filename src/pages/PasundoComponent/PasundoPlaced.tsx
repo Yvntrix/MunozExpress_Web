@@ -9,7 +9,12 @@ import {
   Table,
   Text,
 } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import {
+  onChildChanged,
+  onChildRemoved,
+  onValue,
+  ref,
+} from "firebase/database";
 import { useEffect, useState } from "react";
 import { ShoppingCart } from "tabler-icons-react";
 import LoaderComponent from "../../components/LoaderComponent";
@@ -26,6 +31,12 @@ export default function PasundoPlaced() {
   let row = 0;
   let completed: any[] = [];
   useEffect(() => {
+    onChildRemoved(ref(db, "Transactions/Pasundo"), (data) => {
+      fetchData();
+    });
+    onChildChanged(ref(db, "Transactions/Pasundo"), (data) => {
+      fetchData();
+    });
     fetchData();
   }, []);
 

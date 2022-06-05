@@ -319,17 +319,18 @@ export default function DailySalary() {
             </Group>
           </Paper>
         </Grid.Col>
-
         <Grid.Col md={6} lg={3}>
           <Paper withBorder p="md" radius="md">
             <Group position="apart">
               <Text size="xs" color="dimmed">
-                Total Sales
+                Salary
               </Text>
-              <Cash size={22} />
+              <ClipboardCheck size={22} />
             </Group>
             <Group position="center" spacing="xs" p="sm">
-              <Text weight={700}>{"PHP " + total + ".00"}</Text>
+              <Text weight={700}>
+                {"PHP " + Math.round(total * 0.3).toFixed(2)}
+              </Text>
             </Group>
           </Paper>
         </Grid.Col>

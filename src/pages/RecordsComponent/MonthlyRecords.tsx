@@ -11,7 +11,7 @@ import {
   Tooltip,
   UnstyledButton,
 } from "@mantine/core";
-import { DatePicker, isSameMonth } from "@mantine/dates";
+import { isSameMonth } from "@mantine/dates";
 import dayjs from "dayjs";
 import { onValue, ref } from "firebase/database";
 import _ from "lodash";
@@ -25,7 +25,6 @@ import {
 } from "react-table";
 import {
   ArrowsSort,
-  Calendar,
   Cash,
   ChevronDown,
   ChevronLeft,
@@ -122,9 +121,9 @@ export default function MonthlyRecords() {
                       );
                     }
                   );
+                  row += 1;
                 }
               }
-              row += 1;
             }
           }
           if (i == "Pahatid") {
@@ -176,9 +175,9 @@ export default function MonthlyRecords() {
                       );
                     }
                   );
+                  row += 1;
                 }
               }
-              row += 1;
             }
           }
           if (i == "Pakuha") {
@@ -230,9 +229,9 @@ export default function MonthlyRecords() {
                       );
                     }
                   );
+                  row += 1;
                 }
               }
-              row += 1;
             }
           }
           if (i == "Pasundo") {
@@ -284,9 +283,9 @@ export default function MonthlyRecords() {
                       );
                     }
                   );
+                  row += 1;
                 }
               }
-              row += 1;
             }
           }
         }

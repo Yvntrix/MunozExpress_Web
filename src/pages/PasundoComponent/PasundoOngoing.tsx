@@ -1,21 +1,17 @@
 import {
-  Container,
-  Group,
-  Loader,
-  Modal,
-  Paper,
-  Stack,
-  Table,
-  Text,
+  Container, Paper
 } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import {
+  onChildChanged,
+  onChildRemoved,
+  onValue,
+  ref
+} from "firebase/database";
 import { useEffect, useState } from "react";
-import { ListDetails } from "tabler-icons-react";
 import LoaderComponent from "../../components/LoaderComponent";
 import NoRow from "../../components/NoRow";
 import TransactionTable from "../../components/TransactionTable";
 import StartFirebase from "../../firebase";
-import PasundoDetails from "./PasundoDetails";
 
 export default function PasundoOngoing() {
   const db = StartFirebase();
@@ -25,6 +21,12 @@ export default function PasundoOngoing() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
+    onChildRemoved(ref(db, "Transactions/Pasundo"), (data) => {
+      fetchData();
+    });
+    onChildChanged(ref(db, "Transactions/Pasundo"), (data) => {
+      fetchData();
+    });
     fetchData();
   }, []);
 

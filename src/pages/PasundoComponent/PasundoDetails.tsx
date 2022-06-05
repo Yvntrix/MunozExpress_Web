@@ -1,10 +1,12 @@
 import {
   ActionIcon,
+  Badge,
   Button,
   Container,
   Divider,
   Grid,
   Group,
+  Modal,
   Paper,
   Text,
 } from "@mantine/core";
@@ -24,6 +26,7 @@ import {
   User,
 } from "tabler-icons-react";
 import ApproveButton from "../../components/ApproveButton";
+import UserDetails from "../../components/UserDetails";
 import StartFirebase from "../../firebase";
 type data = {
   id: any;
@@ -75,12 +78,51 @@ export default function PasundoDetails({ id, fn }: data) {
   function del() {
     fn();
   }
+  const [opened, setOpened] = useState(false);
+  const [userId, setUserId] = useState("");
   return (
     <>
       {completeds.map(function (d) {
         return (
           <Container fluid key={d.TransactionId}>
+             <Modal
+              opened={opened}
+              onClose={() => setOpened(false)}
+              title={
+                <Group spacing="xs">
+                  <Id color="red" />
+                  <Text weight={700}>Customer Details</Text>
+                </Group>
+              }
+            >
+              {<UserDetails id={userId} />}
+            </Modal>
             <Divider my="sm" />
+            <Group position="center">
+              <Text weight={700}>Status:</Text>
+              {(() => {
+                if (d.Ongoing === 0 && d.Completed === 0 && d.Cancelled === 0) {
+                  return <Badge variant="filled">Placed</Badge>;
+                }
+                if (d.Ongoing === 1 && d.Completed === 0 && d.Cancelled === 0) {
+                  return <Badge variant="filled">Ongoing</Badge>;
+                }
+                if (d.Ongoing === 0 && d.Completed === 1 && d.Cancelled === 0) {
+                  return (
+                    <Badge variant="filled" color="teal">
+                      Completed
+                    </Badge>
+                  );
+                }
+                if (d.Ongoing === 0 && d.Completed === 0 && d.Cancelled === 1) {
+                  return (
+                    <Badge variant="filled" color="red">
+                      Cancelled
+                    </Badge>
+                  );
+                }
+              })()}
+            </Group>
             <Grid grow>
               <Grid.Col md={1}>
                 <Paper p="lg">
@@ -109,6 +151,16 @@ export default function PasundoDetails({ id, fn }: data) {
                     <Group spacing="xs">
                       <User color="red" />
                       Customer Details
+                      <Button
+                        color="red"
+                        size="xs"
+                        onClick={() => {
+                          setUserId(d.CustomerId);
+                          setOpened(true);
+                        }}
+                      >
+                        Check Profile
+                      </Button>
                     </Group>
                   </Text>
                   <Divider my="md" />

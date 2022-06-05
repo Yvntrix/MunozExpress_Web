@@ -1,14 +1,32 @@
-import { ActionIcon, Container, Divider, Group, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Button,
+  Center,
+  Container,
+  Divider,
+  Group,
+  Image,
+  Loader,
+  Paper,
+  Text,
+} from "@mantine/core";
 import { onChildChanged, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
-import { Certificate, Id, Phone, Send } from "tabler-icons-react";
+import { Certificate, Id, Phone, Photo, Send, Trash } from "tabler-icons-react";
 import StartFirebase from "../firebase";
+import {
+  deleteObject,
+  getDownloadURL,
+  getStorage,
+  listAll,
+  ref as refs,
+} from "firebase/storage";
 
 export default function UserDetails(id: any) {
   let completed: any[] = [];
   const [completeds, setCompleteds] = useState<any[]>([]);
   const db = StartFirebase();
-
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     const detailRef = ref(db, "users/" + id.id);
     onChildChanged(detailRef, (data) => {
@@ -18,7 +36,7 @@ export default function UserDetails(id: any) {
         ref(db, "users/" + id.id),
         (snapshot) => {
           const detail = snapshot.val();
-          
+
           completed.push({
             id: id.id,
             firstName: detail.FirstName,
@@ -35,7 +53,7 @@ export default function UserDetails(id: any) {
       );
     });
 
-    return onValue(
+    onValue(
       ref(db, "users/" + id.id),
       (snapshot) => {
         const detail = snapshot.val();
@@ -53,8 +71,52 @@ export default function UserDetails(id: any) {
         onlyOnce: true,
       }
     );
+
+    getImage();
   }, []);
   let call = "tel:";
+
+  const storage = getStorage();
+  const [src, setSrc] = useState("");
+  const [del, setDel] = useState(false);
+  function getImage() {
+    setLoading(true);
+    setSrc("");
+    const listRef = refs(storage, "pictures/");
+    listAll(listRef).then((res) => {
+      if (res.items.length == 0) {
+        setTimeout(() => setLoading(false), 400);
+      }
+      res.items.forEach((itemRef) => {
+        if (itemRef.fullPath == "pictures/" + id.id) {
+          getDownloadURL(itemRef).then((url) => {
+            setSrc(url);
+            setLoading(false);
+          });
+        } else {
+          setTimeout(() => setLoading(false), 400);
+        }
+      });
+    });
+  }
+
+  function delImage() {
+    setDel(true);
+    const desertRef = refs(storage, "pictures/" + id.id);
+
+    // Delete the file
+    deleteObject(desertRef)
+      .then(() => {
+        setTimeout(() => {
+          setDel(false);
+          getImage();
+        }, 400);
+      })
+      .catch((error) => {
+        // Uh-oh, an error occurred!
+      });
+  }
+
   return (
     <>
       {completeds.map(function (d) {
@@ -108,7 +170,45 @@ export default function UserDetails(id: any) {
                 Email
               </Group>
             </Text>
-            <Text>{d.email}</Text> <Divider my="sm" variant="dashed" />
+            <Text>{d.email}</Text>
+            <Divider my="sm" variant="dashed" />
+            <Text weight={700}>
+              <Group spacing="xs">
+                <Photo color="red" />
+                ID Photo
+              </Group>
+            </Text>
+            <Center m="md">
+              {loading ? (
+                <Loader color="red" />
+              ) : (
+                <>
+                  {" "}
+                  <Image
+                    width={300}
+                    height={180}
+                    radius="md"
+                    src={src}
+                    fit="cover"
+                    withPlaceholder
+                  />
+                </>
+              )}
+            </Center>
+            <Divider my="sm" variant="dashed" />
+            <Group grow position="right">
+              <Button
+                loading={del}
+                disabled={src == "" ? true : false}
+                color="red"
+                leftIcon={<Trash size={14} />}
+                onClick={() => {
+                  delImage();
+                }}
+              >
+                Remove Photo
+              </Button>
+            </Group>
           </Container>
         );
       })}

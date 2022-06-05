@@ -1,5 +1,10 @@
 import { Container, Paper } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import {
+  onChildChanged,
+  onChildRemoved,
+  onValue,
+  ref,
+} from "firebase/database";
 import { useEffect, useState } from "react";
 import LoaderComponent from "../../components/LoaderComponent";
 import NoRow from "../../components/NoRow";
@@ -14,6 +19,12 @@ export default function PabiliOngoing() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
+    onChildRemoved(ref(db, "Transactions/Pabili"), (data) => {
+      fetchData();
+    });
+    onChildChanged(ref(db, "Transactions/Pabili"), (data) => {
+      fetchData();
+    });
     fetchData();
   }, []);
 

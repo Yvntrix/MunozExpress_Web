@@ -8,7 +8,7 @@ import {
   Table,
   Text,
 } from "@mantine/core";
-import { onChildChanged, onValue, ref } from "firebase/database";
+import { onChildChanged, onChildRemoved, onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import { ListDetails } from "tabler-icons-react";
 import LoaderComponent from "../../components/LoaderComponent";
@@ -25,6 +25,12 @@ export default function PakuhaOngoing() {
   let completed: any[] = [];
   let row = 0;
   useEffect(() => {
+    onChildRemoved(ref(db, "Transactions/Pakuha"), (data) => {
+      fetchData();
+    });
+    onChildChanged(ref(db, "Transactions/Pakuha"), (data) => {
+      fetchData();
+    });
     fetchData();
   }, []);
 
@@ -34,7 +40,7 @@ export default function PakuhaOngoing() {
     setCompleteds(completed);
     setLoader(false);
     return onValue(
-      ref(db, "Transactions/Pabili"),
+      ref(db, "Transactions/Pakuha"),
       (snapshot) => {
         const transactions = snapshot.val();
         for (let i in transactions) {
