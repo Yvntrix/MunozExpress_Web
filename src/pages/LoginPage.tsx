@@ -20,7 +20,7 @@ export function AuthenticationTitle({ fn }: func) {
   const [loading, setLoading] = useState(false);
   function call(user: string, pass: string) {
     setLoading(true);
-    if (user == "adminxpress" && pass == "adminadmin") {
+    if (user == "admin" && pass == "admin") {
       setTimeout(() => {
         setLoading(false);
         fn();
